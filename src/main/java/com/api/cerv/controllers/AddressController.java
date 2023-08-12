@@ -1,6 +1,7 @@
 package com.api.cerv.controllers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +43,15 @@ public class AddressController {
       @PathVariable(value = "id") UUID id,
       @RequestBody @Valid AddressRecordDTO addressRecordDTO) {
 
-    return addressService.updateAddress(id, addressRecordDTO);
+    var address0 = addressService.findAddressById(id);
+    if (address0.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Address not found");
+    }
+
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(addressService
+            .updateAddress(id, addressRecordDTO, address0));
   }
 
 }

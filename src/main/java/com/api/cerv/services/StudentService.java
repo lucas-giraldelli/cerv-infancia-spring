@@ -32,20 +32,15 @@ public class StudentService {
     return studentRepository.findAll();
   }
 
-  public ResponseEntity<Object> getStudentById(UUID id) {
+  public Optional<StudentModel> getStudentById(UUID id) {
     Optional<StudentModel> student0 = studentRepository.findById(id);
-    if (student0.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
-    }
-    return ResponseEntity.status(HttpStatus.OK).body(student0.get());
+    return student0;
   }
 
-  public ResponseEntity<Object> updateUserById(UUID id, StudentRecordDTO studentRecordDTO) {
+  public StudentModel updateUserById(UUID id,
+      StudentRecordDTO studentRecordDTO,
+      Optional<StudentModel> student0) {
 
-    Optional<StudentModel> student0 = studentRepository.findById(id);
-    if (student0.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
-    }
     var studentModel = student0.get();
 
     /** Logic for address */
@@ -61,15 +56,13 @@ public class StudentService {
     }
 
     BeanUtils.copyProperties(studentRecordDTO, studentModel);
-    return ResponseEntity.status(HttpStatus.OK).body(studentRepository.save(studentModel));
+    return studentRepository.save(studentModel);
   }
 
-  public ResponseEntity<Object> deleteStudent(UUID id) {
-    Optional<StudentModel> student0 = studentRepository.findById(id);
-    if (student0.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
-    }
+  public String deleteStudent(UUID id,
+      Optional<StudentModel> student0) {
     studentRepository.delete(student0.get());
-    return ResponseEntity.status(HttpStatus.OK).body("Student deleted successfully.");
+
+    return "Student deleted successfully.";
   }
 }

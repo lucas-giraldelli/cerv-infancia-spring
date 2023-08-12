@@ -40,20 +40,35 @@ public class StudentController {
 
   @GetMapping("/students/{id}")
   public ResponseEntity<Object> getStudentById(@PathVariable(value = "id") UUID id) {
-    return studentService.getStudentById(id);
+    if (studentService.getStudentById(id).isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student not found");
+    }
+    return ResponseEntity.status(HttpStatus.OK).body(studentService.getStudentById(id).get());
   }
 
   @PutMapping("/students/{id}")
   public ResponseEntity<Object> updateUserById(
       @PathVariable(value = "id") UUID id,
       @RequestBody @Valid StudentRecordDTO studentRecordDTO) {
+    var student0 = studentService.getStudentById(id);
 
-    return studentService.updateUserById(id, studentRecordDTO);
+    if (student0.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student ID does not exist");
+    }
+
+    return ResponseEntity
+        .status(HttpStatus.OK)
+        .body(studentService
+            .updateUserById(id, studentRecordDTO, student0));
   }
 
   @DeleteMapping("/students/{id}")
   public ResponseEntity<Object> deleteStudent(@PathVariable(value = "id") UUID id) {
-    return studentService.deleteStudent(id);
-  }
+    var student0 = studentService.getStudentById(id);
+    if (student0.isEmpty()) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Student ID not found");
+    }
 
+    return ResponseEntity.status(HttpStatus.OK).body(studentService.deleteStudent(id, student0));
+  }
 }

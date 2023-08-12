@@ -28,17 +28,17 @@ public class AddressService {
     return addressRepository.findAll();
   }
 
-  public ResponseEntity<Object> updateAddress(UUID id, AddressRecordDTO addressRecordDTO) {
-    Optional<AddressModel> address0 = addressRepository.findById(id);
-    if (address0.isEmpty()) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Address does not exist");
-    }
+  public Object updateAddress(UUID id,
+      AddressRecordDTO addressRecordDTO,
+      Optional<AddressModel> address0) {
+
     var addressModel = address0.get();
+
     BeanUtils.copyProperties(addressRecordDTO, addressModel);
-    return ResponseEntity.status(HttpStatus.OK).body(addressRepository.save(addressModel));
+    return addressRepository.save(addressModel);
   }
 
-  public Optional<AddressModel> findById(UUID id) {
+  public Optional<AddressModel> findAddressById(UUID id) {
     return addressRepository.findById(id);
   }
 }
